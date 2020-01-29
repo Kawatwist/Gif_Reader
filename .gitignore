@@ -17,6 +17,7 @@
 *.pch
 
 # Libraries
+libraries
 *.lib
 *.a
 *.la
@@ -41,6 +42,7 @@
 *.su
 *.idb
 *.pdb
+.vscode
 
 # Kernel Module Compile Results
 *.mod*

@@ -6,11 +6,12 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 22:58:35 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/28 23:42:15 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/29 02:07:16 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "gif_reader.h"
+#include <stdio.h>
 
 /*
 **	Find Order :
@@ -45,6 +46,22 @@ int			find_block_type(t_gif *gif, int *find)
 		val[0] == 0xF9 ? *find = 2 : 0;
 		val[0] == 0xFE ? *find = 3 : 0;
 		val[0] == 0x01 ? *find = 4 : 0;
+	}
+	else
+	{
+		for(int i = 0; i < 5000; i++)
+		{	if (read(gif->fd, val, 1) > 0)
+			{
+				if (*val == 33)
+					printf("%d <=> [%c]\n", *val, *val);
+
+			}
+			else
+			{
+				printf("ERROR\n");
+			}
+
+		}
 	}
 	if (*find == 99)
 		return (3);

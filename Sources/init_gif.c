@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 23:09:43 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/29 00:10:37 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/29 00:45:59 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int		reach_sub_block(t_gif *gif)
 		if ((buffer = malloc((size_t)len)) == NULL)
 			return (5);
 		if (read(gif->fd, buffer, (size_t)len) < (long)len)
-			return (4);
+			return (4); // ! MALLOC
+		free(buffer);
 	}
 	return (0);
 }
@@ -42,20 +43,45 @@ int		get_gif_app(t_gif *gif)
 	if ((buffer = malloc((size_t)len)) == NULL)
 		return (5);
 	if (read(gif->fd, buffer, (size_t)len) < (long)len)
-		return (4);
+		return (4); // MALLOC
+	free(buffer);
 	if ((gif->error_value = reach_sub_block(gif)))
 		return (gif->error_value);
 	return (0);
 }
-
+/*
+**	Block Terminator isnt include in the len => +1
+*/
 int		get_gif_grap(t_gif *gif)
 {
+	unsigned char	len;
 	char			*buffer;
 
-	if ((buffer = malloc(GRAPH_LEN)) == NULL)
-		return (5);
-	if (read(gif->fd, buffer, GRAPH_LEN) < GRAPH_LEN)
+	if (read(gif->fd, &len, 1) < 1)
 		return (4);
+	if ((buffer = malloc((size_t)len + 1)) == NULL)
+		return (5);
+	if (read(gif->fd, buffer, (size_t)len + 1) < (long)len + 1)
+		return (4); //MALLOC
+	if ((gif->current->filled & 0b11) != 0)
+	{
+		if ((gif->current->next = malloc(sizeof(t_frame))) == NULL)
+			return (5);
+		gif->current = gif->current->next;
+	}
+	gif->current->transparent = buffer[0] & 0b1;
+	gif->current->input = buffer[0] & 0b10;
+	gif->current->method = buffer[0] & 0b11100;
+	gif->current->unused = buffer[0] & 0b11100000;
+	gif->current->delay = buffer[1] + buffer[2];
+	gif->current->index_transp = buffer[3];
+	gif->current->filled = 0b1;
+	if (buffer[(size_t)len])
+	{
+		free(buffer);
+		return (4);
+	}
+	free(buffer);
 	return (0);
 }
 
