@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 18:56:39 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/30 20:52:12 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/30 22:12:08 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void		clear_dico(t_lzw dico[256][256])
 	}
 }
 
-int			uncompress_lzw(t_lzw *src, unsigned char *dest, int nb)
+int			uncompress_lzw(t_lzw *src, unsigned char *dest, int nb, size_t *len)
 {
 	t_lzw			dictionary[256][256];
 	int				dico;
@@ -157,25 +157,24 @@ int			uncompress_lzw(t_lzw *src, unsigned char *dest, int nb)
 /*
 **	Wikipedia Example
 */
-/*
-	src[0].value = 'T';
-	src[1].value = 'O';
-	src[2].value = 'B';
-	src[3].value = 'E';
-	src[4].value = 'O';
-	src[5].value = 'R';
-	src[6].value = 'N';
-	src[7].value = 'O';
-	src[8].value = 'T';
-	src[9].value = 257;
-	src[10].value = 259;
-	src[11].value = 261;
-	src[12].value = 266;
-	src[13].value = 260;
-	src[14].value = 262;
-	src[15].value = 264;
-	src[16].value = END;
-*/
+
+	// src[0].value = 'T';
+	// src[1].value = 'O';
+	// src[2].value = 'B';
+	// src[3].value = 'E';
+	// src[4].value = 'O';
+	// src[5].value = 'R';
+	// src[6].value = 'N';
+	// src[7].value = 'O';
+	// src[8].value = 'T';
+	// src[9].value = 257;
+	// src[10].value = 259;
+	// src[11].value = 261;
+	// src[12].value = 266;
+	// src[13].value = 260;
+	// src[14].value = 262;
+	// src[15].value = 264;
+	// src[16].value = END;
 	index = 0;
 	index2 = 1;
 	dico = 0;
@@ -183,14 +182,18 @@ int			uncompress_lzw(t_lzw *src, unsigned char *dest, int nb)
 	dest[0] = src[0].value;
 	while (src[++index].value != END)
 	{
-		if (dico < 256)
+		if (dico < 255)
 			add_dico(dictionary, &(src[index - 1]), dico);
 		index2 += place_dest(dictionary, &(src[index]), &(dest[index2]));
 		dico++;
 	}
-	printf("Resultat : ");
-	for (int i = 0; dest[i];i++)
-		printf("%c", dest[i]);
-	printf("\n");
+	*len = index2;
+	// printf("%d || %d\n", index2, dico);
+	// printf("Resultat : ");
+	// for (int i = 0; dest[i];i++)
+	// 	printf("%c", dest[i]);
+	// printf("\n");
+	// for (int i = 0; i < 40; i+=3)
+	// 	printf("[%d]\t[%d]\t[%d]\n", dest[i + 0], dest[i + 1], dest[i + 2]);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 23:09:43 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/29 20:08:19 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/30 23:08:32 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,21 +55,27 @@ int		get_gif_app(t_gif *gif)
 int		get_gif_grap(t_gif *gif)
 {
 	unsigned char	len;
-	char			*buffer;
+	char			buffer[256];
 
+	printf("Graphique Block here\n");
 	if (read(gif->fd, &len, 1) < 1)
 		return (4);
-	if ((buffer = malloc((size_t)len + 1)) == NULL)
-		return (5);
+	printf("Len of this bloc [%d]\n", len);
 	if (read(gif->fd, buffer, (size_t)len + 1) < (long)len + 1)
-		return (4); //MALLOC
-	if ((gif->current->filled & 0b11) != 0)
+		return (4);
+	printf("Buffer Load sucessfully\n");
+	if (gif->current->filled & 0b11)
 	{
-		if ((gif->current->next = malloc(sizeof(t_frame))) == NULL)
+		printf("The Frame is already Used, We need to Switch\n");
+		if ((gif->current->next = malloc(sizeof(t_frame *))) == NULL)
 			return (5);
+		printf("New Frame Mallocated\n");
 		gif->current = gif->current->next;
 		gif->current->next = NULL;
+		gif->current->data = NULL;
+		printf("Pointer of Frame setup\n");
 	}
+	printf("Let's Fill the new head of the frame\n");
 	gif->current->transparent = buffer[0] & 0b1;
 	gif->current->input = buffer[0] & 0b10;
 	gif->current->method = buffer[0] & 0b11100;
@@ -78,11 +84,8 @@ int		get_gif_grap(t_gif *gif)
 	gif->current->index_transp = buffer[3];
 	gif->current->filled = 0b1;
 	if (buffer[(size_t)len])
-	{
-		free(buffer);
 		return (4);
-	}
-	free(buffer);
+	printf("The frame is Initilized correctly\n");
 	return (0);
 }
 

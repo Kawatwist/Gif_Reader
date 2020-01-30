@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 21:17:14 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/29 00:23:11 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/30 22:49:55 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,11 @@ t_gif		*load_gif(char *path)
 	set_zero(gif, sizeof(t_gif));
 	if ((gif->fd = open(path, O_RDONLY)) < 0 || read(gif->fd, NULL, 0))
 		return (free_gif(gif, 1));
-	if ((gif->frame = malloc(sizeof(t_frame))) == NULL)
+	if ((gif->frame = malloc(sizeof(t_frame *))) == NULL)
 		return (free_gif(gif, 5));
 	set_zero(gif->frame, sizeof(t_frame));
 	gif->current = gif->frame;
+	gif->current->next = NULL;
 /*
 **	Parsing The Header File
 */
