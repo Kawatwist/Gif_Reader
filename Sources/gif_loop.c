@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 22:58:35 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/29 02:07:16 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/30 01:58:03 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 **	Graphics Control Extension
 **	Comment Extension
 **	Plain Text Extension
+**	Image data color code
 **
 **	3B is The End Of File
 */
@@ -32,10 +33,11 @@ int			find_block_type(t_gif *gif, int *find)
 	*find = 99;
 	if (read(gif->fd, &val, 1) < 1)
 		return (4);
-	if (*val == 0x2C || *val == 0x3B)
+	if (*val == 0x2C || *val == 0x3B || *val == 0x2C)
 	{
 		val[0] == 0x2C ? *find = 0 : 0;
-		val[0] == 0x3B ? *find = 5 : 0;
+		val[0] == 0x02 ? *find = 5 : 0;
+		val[0] == 0x3B ? *find = 6 : 0;
 		return (0);
 	}
 	if (*val == 0x21)
@@ -46,22 +48,6 @@ int			find_block_type(t_gif *gif, int *find)
 		val[0] == 0xF9 ? *find = 2 : 0;
 		val[0] == 0xFE ? *find = 3 : 0;
 		val[0] == 0x01 ? *find = 4 : 0;
-	}
-	else
-	{
-		for(int i = 0; i < 5000; i++)
-		{	if (read(gif->fd, val, 1) > 0)
-			{
-				if (*val == 33)
-					printf("%d <=> [%c]\n", *val, *val);
-
-			}
-			else
-			{
-				printf("ERROR\n");
-			}
-
-		}
 	}
 	if (*find == 99)
 		return (3);
@@ -77,7 +63,7 @@ int			loop_gif(t_gif *gif)
 	{
 		if ((gif->error_value = find_block_type(gif, &parse)))
 			return (gif->error_value);
-		if (parse == 5)
+		if (parse == 6)
 			return (0);
 		gif->type[parse] (gif);
 	}

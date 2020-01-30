@@ -6,50 +6,51 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 23:16:06 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/29 02:00:55 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/30 03:35:32 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "gif_reader.h"
+#include <stdio.h>
 
 static int		join_block(t_gif *gif, t_frame *curr)
 {
 	int				pos;
 	unsigned char	len;
 	char			buffer[255];
-	unsigned char	*new;
-	unsigned char	*ptr;
 
 	pos = 0;
+	if ((curr->data = malloc(1)) == NULL)
+		return (5);
 	while ((read(gif->fd, &len, 1)) && len)
 	{
-		ptr = curr->data;
 		curr->data = curr->data + pos;
 		if (read(gif->fd, buffer, len) < (long)len)
 			return (4);
-		if ((new = malloc((curr->data - ptr) + (size_t)len)) == NULL)
-			return (5);
-		pos = -1;
-		while (++pos < (curr->data - ptr))
-			new[pos] = ptr[pos];
-		curr->data != NULL ? free(curr->data) : 0;
-		curr->data = new;
-		new += pos;
-		pos = -1;
-		while (len-- && ++pos)
-			new[pos] = buffer[pos];
+		curr->data = strjoinfree(curr->data, (unsigned char *)buffer, 1);
 	}
 	return (0);
 }
 
 static int		get_data(t_gif *gif, t_frame *curr)
 {
+	size_t		i;
+
 	if ((gif->error_value = join_block(gif, curr)))
 		return (gif->error_value);
-	// uncompress()
+	if ((curr->pxl = malloc((size_t)(curr->head.width * curr->head.height))) == NULL)
+		return (5);
+	i = -1;
+	while (++i < (size_t)(curr->head.width * curr->head.height))
+		curr->pxl[i] = 0;
+	if (curr->data == NULL)
+		return (5);
+	if ((gif->error_value = uncompress_lzw((t_lzw *)curr->data, curr->pxl, curr->head.sort)))
+		return (gif->error_value);
 	/*
-	**	LZW COMPRESSION
+	**	LZW UNCOMPRESSION
 	*/
+	curr->filled |= 0b10;
 	return (0);
 }
 
@@ -72,7 +73,7 @@ int		get_gif_data(t_gif *gif)
 
 	checker("Data !\n");
 	if ((buffer = malloc(DATA_HEAD)) == NULL)
-		return (5);
+		return (5); // FREE
 	if (read(gif->fd, buffer, DATA_HEAD) < DATA_HEAD)
 		return (4);
 	if (gif->current->filled & 0b10)
@@ -80,6 +81,7 @@ int		get_gif_data(t_gif *gif)
 		if ((gif->current->next = malloc(sizeof(t_frame))) == NULL)
 			return (5);
 		gif->current = gif->current->next;
+		gif->current->next = NULL;
 	}
 	gif->current->head.left = buffer[0] + (buffer[1] << 8);
 	gif->current->head.top = buffer[2] + (buffer[3] << 8);
@@ -94,5 +96,12 @@ int		get_gif_data(t_gif *gif)
 		get_color_map(gif, gif->current);
 	gif->current->data = NULL;
 	get_data(gif, gif->current);
+	return (0);
+}
+
+int			get_gif_code_data(t_gif *gif)
+{
+	(void)gif;
+	printf("Salam\n");
 	return (0);
 }

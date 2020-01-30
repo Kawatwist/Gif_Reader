@@ -30,9 +30,11 @@ INC_PATH 		= $(shell find Includes -type d) $(shell find libraries/include -type
 OBJ_PATH		= OBJ
 
 SRC				=	main.c										\
+					tool.c										\
 					gif_main.c									\
 					init_gif.c									\
 					data.c										\
+					lzw.c										\
 					gif_loop.c									\
 					header.c									\
 

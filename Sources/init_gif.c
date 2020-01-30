@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 23:09:43 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/29 00:45:59 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/29 20:08:19 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ int		get_gif_grap(t_gif *gif)
 		if ((gif->current->next = malloc(sizeof(t_frame))) == NULL)
 			return (5);
 		gif->current = gif->current->next;
+		gif->current->next = NULL;
 	}
 	gif->current->transparent = buffer[0] & 0b1;
 	gif->current->input = buffer[0] & 0b10;
@@ -88,12 +89,16 @@ int		get_gif_grap(t_gif *gif)
 int		get_gif_comment(t_gif *gif)
 {
 	(void)gif;
+	if ((gif->error_value = reach_sub_block(gif)))
+		return (gif->error_value);
 	return (0);
 }
 
 int		get_gif_txt(t_gif *gif)
 {
 	(void)gif;
+	if ((gif->error_value = reach_sub_block(gif)))
+		return (gif->error_value);
 	return (0);
 }
 
@@ -104,4 +109,5 @@ void		init_gif_type(t_gif *gif)
 	gif->type[2] = get_gif_grap;
 	gif->type[3] = get_gif_comment;
 	gif->type[4] = get_gif_txt;
+	gif->type[5] = get_gif_code_data;
 }
