@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 23:16:06 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/30 23:22:03 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/31 22:11:11 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,30 +50,36 @@ static void		set_color(t_gif *gif, t_frame *curr, unsigned char *base, unsigned 
 	{
 		if (curr->head.local_tab)
 		{
-			pxl[(i * 4) + 0] = ((char *)&curr->localtab[base[i] * 3])[0];
-			pxl[(i * 4) + 1] = ((char *)&curr->localtab[base[i] * 3])[1];
-			pxl[(i * 4) + 2] = ((char *)&curr->localtab[base[i] * 3])[2];
-			pxl[(i * 4) + 3] = ((char *)&curr->localtab[base[i] * 3])[3];
+			pxl[(i * 3) + 0] = ((char *)&curr->localtab[base[i] * 3])[0];
+			pxl[(i * 3) + 1] = ((char *)&curr->localtab[base[i] * 3])[1];
+			pxl[(i * 3) + 2] = ((char *)&curr->localtab[base[i] * 3])[2];
 		}
 		else
 		{
 			if (base[i] >= (gif->cmlen + 1) * (gif->cmlen + 1))
 				printf("TROP LONG !\n");
-			pxl[(i * 4) + 0] = ((char *)&gif->cm[base[i] * 3])[0];
-			pxl[(i * 4) + 1] = ((char *)&gif->cm[base[i] * 3])[1];
-			pxl[(i * 4) + 2] = ((char *)&gif->cm[base[i] * 3])[2];
-			pxl[(i * 4) + 3] = ((char *)&gif->cm[base[i] * 3])[3];
+			if (base[i] > gif->cmlen)
+				printf("Probleme de taille Global Color Map (%d / %d)\n", base[i], gif->cmlen);
+			else
+			{
+				pxl[(i * 3) + 0] = ((char *)&gif->cm[base[i]])[0];
+				pxl[(i * 3) + 1] = ((char *)&gif->cm[base[i]])[1];
+				pxl[(i * 3) + 2] = ((char *)&gif->cm[base[i]])[2];
+				// printf("Pxl : [%d] => [%#x]\t[%#x]\t[%#x]\n", i, pxl[(i * 3) + 0],pxl[(i * 3) + 1],pxl[(i * 3) + 2]);
+			}
 		}
 	}
-	printf("End Set_color~\n");
+	printf("End Set_color~ [%d]\n", i);
 }
 
-static int		get_data(t_gif *gif, t_frame *curr)
+int			get_gif_code_data(t_gif *gif)
 {
 	size_t		i;
 	size_t		uncompress;
+	t_frame		*curr;
 
 	uncompress = 0;
+	curr = gif->current;
 	printf("Welcome to the data section (Fd : %d)\n", gif->fd);
 	if ((gif->error_value = join_block(gif, curr)))
 		return (gif->error_value);
@@ -119,7 +125,9 @@ static int		get_color_map(t_gif *gif, t_frame *curr)
 		return (4);
 	return (0);
 }
-
+/*
+**	Image Descriptor
+*/
 int		get_gif_data(t_gif *gif)
 {
 	(void)gif;
@@ -135,8 +143,9 @@ int		get_gif_data(t_gif *gif)
 		gif->current = gif->current->next;
 		gif->current->next = NULL;
 		gif->current->data = NULL;
+		printf("Frame Resetup(Fd : %d)\n", gif->fd);
 	}
-	printf("Frame Resetup(Fd : %d)\n", gif->fd);
+	printf("Setup Header Frame\n");
 	gif->current->head.left = buffer[0] + (buffer[1] << 8);
 	gif->current->head.top = buffer[2] + (buffer[3] << 8);
 	gif->current->head.width = buffer[4] + (buffer[5] << 8);
@@ -149,14 +158,6 @@ int		get_gif_data(t_gif *gif)
 	if (gif->current->head.local_tab)
 		get_color_map(gif, gif->current);
 	printf("Head data end (Fd : %d)\n", gif->fd);
-	get_data(gif, gif->current);
 	printf("Real Data get\n");
-	return (0);
-}
-
-int			get_gif_code_data(t_gif *gif)
-{
-	(void)gif;
-	printf("Salam\n");
 	return (0);
 }

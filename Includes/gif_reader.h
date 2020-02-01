@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 21:09:45 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/30 03:33:18 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/31 22:11:47 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include "error.h"
 
 # define TRUE 1
-# define DATA_HEAD 10
+# define DATA_HEAD 9
 # define LZW 256
 # define END 256
 
@@ -42,10 +42,10 @@ typedef struct      s_header
 
 typedef struct      s_frame_head
 {
-    short           left;
-    short           top;
-    short           width;
-    short           height;
+    unsigned short  left;
+    unsigned short  top;
+    unsigned short  width;
+    unsigned short  height;
     unsigned int    local_tab : 1;
     unsigned int    interlace : 1;
     unsigned int    sort : 1;
@@ -65,7 +65,8 @@ struct              s_frame
     unsigned int    input : 1;
     unsigned int    transparent : 1;
     unsigned int    unused : 3;
-    unsigned char   *data;
+    t_lzw          *data;
+    unsigned char   *uncompress;
     unsigned char   *pxl;
     t_frame         *next;
 };
@@ -89,7 +90,7 @@ void		checker(char *msg); // REMOVE
 /*
 **  Lzw Algorithm's
 */
-int			uncompress_lzw(t_lzw *src, unsigned char *dest, int nb);
+int			uncompress_lzw(t_lzw *src, unsigned char *dest, int nb, size_t *len);
 /*
 **          Block's Function
 */
@@ -100,8 +101,11 @@ int		    get_gif_comment(t_gif *gif);
 int		    get_gif_txt(t_gif *gif);
 int			get_gif_code_data(t_gif *gif);
 
-unsigned char *strjoinfree(unsigned char *dst, unsigned char *src, size_t n);
-int			cmpnstr(t_lzw *check, t_lzw *find, size_t n);
+void		tmp_c(void);
+size_t		square(size_t val);
+t_lzw	    *dup_block(t_lzw *src, size_t len);
+t_lzw       *joinfree(t_lzw *dst, t_lzw *src, size_t n, size_t len);
+long		block_lzw(t_lzw *ptr);
 long		block_len(unsigned char *ptr);
 void		set_zero(void *str, size_t len);
 int         loop_gif(t_gif *gif);

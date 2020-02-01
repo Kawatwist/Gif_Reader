@@ -6,13 +6,21 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 01:17:39 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/30 23:08:12 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/31 22:02:38 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "gif_reader.h"
 
-//ATTENTION '\0' DONT WORK NEED END MASK
+void		tmp_c(void)
+{
+	read(0, NULL, 1);
+}
+
+size_t		square(size_t val)
+{
+	return (val * val);
+}
 
 t_lzw	*dup_block(t_lzw *src, size_t len)
 {

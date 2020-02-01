@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 22:58:35 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/30 23:03:44 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/31 22:03:02 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ int			loop_gif(t_gif *gif)
 	{
 		if ((gif->error_value = find_block_type(gif, &parse)))
 			return (gif->error_value);
+		tmp_c();
 		if (parse == 6)
 			return (0);
 		gif->type[parse] (gif);

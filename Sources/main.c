@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 21:03:54 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/30 23:17:41 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/01/31 21:38:51 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,16 @@ int		main(int argc, char **argv)
 /*
 **	Init Sdl
 */
-	window = SDL_CreateWindow("Show gif file", 0, 0, 100, 100, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Show gif file", 0, 0, 1000, 1000, SDL_WINDOW_SHOWN);
 	rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (gif->frame->pxl == NULL)
 	{
 		printf("NULL !\n");
 		exit(0);
 	}
-	surface = SDL_CreateRGBSurfaceWithFormatFrom(gif->frame->pxl, gif->frame->head.width, gif->frame->head.height, 24, gif->frame->head.width * 3, SDL_PIXELFORMAT_RGB24);
+	surface = SDL_CreateRGBSurfaceWithFormatFrom(gif->frame->pxl, gif->frame->head.width, gif->frame->head.height, 24, gif->frame->head.width * 3, SDL_PIXELFORMAT_BGR24);
 	texture = SDL_CreateTextureFromSurface(rend, surface);
+	SDL_RenderCopy(rend, texture, NULL, NULL);
 /*
 **	Draw on Screen Result
 */
@@ -51,13 +52,17 @@ int		main(int argc, char **argv)
 	SDL_UpdateWindowSurface(window);
 	SDL_PollEvent(&ev);
 	SDL_Delay(2000);
-
-	// SDL_DestroyWindow(window);
-	// SDL_Quit();
+/*
+**	Clear Sdl Memory
+*/
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(surface);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+/*
+**	NEED TO Free the Gif's Struct
+*/
 	return (0);
 }
 
-	// SDL_RenderCopy(rend, texture, NULL, NULL);
 
-	// SDL_DestroyTexture(texture);
-	// SDL_FreeSurface(surface);
