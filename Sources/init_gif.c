@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 23:09:43 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/30 23:08:32 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/02/01 02:50:29 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,5 +112,4 @@ void		init_gif_type(t_gif *gif)
 	gif->type[2] = get_gif_grap;
 	gif->type[3] = get_gif_comment;
 	gif->type[4] = get_gif_txt;
-	gif->type[5] = get_gif_code_data;
 }

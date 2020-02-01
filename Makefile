@@ -34,7 +34,7 @@ SRC				=	main.c										\
 					gif_main.c									\
 					init_gif.c									\
 					data.c										\
-					lzw.c										\
+					uncompress.c								\
 					gif_loop.c									\
 					header.c									\
 

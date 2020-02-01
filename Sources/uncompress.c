@@ -1,25 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lzw.c                                              :+:      :+:    :+:   */
+/*   uncompress.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 18:56:39 by lomasse           #+#    #+#             */
-/*   Updated: 2020/02/01 02:47:05 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/02/01 06:26:10 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "gif_reader.h"
 
 /*
-**	Create a type of 9bits len (Unsigned)
-**
-**
-**	typedef struct	s_lzw
-**	{
-**		Uint16		value : 9;
-**	}				t_lzw;
+**	Create a type of 9bits len
 */
 
 #include <stdio.h>
@@ -74,7 +68,7 @@ int			in_dico(t_lzw dico[256][256], t_lzw *src, int len, int max)
 }
 
 /*
-**	Add The a new word to the dictionary if it doesnt exist
+**	Add The a new word to the dictionary
 */
 
 int			add_dico(t_lzw dico[256][256], t_lzw *src, int nb)
@@ -152,35 +146,15 @@ void		clear_dico(t_lzw dico[256][256])
 	}
 }
 
-/*
-**	Wikipedia Example :
-**
-**	src[0].value = 'T';
-**	src[1].value = 'O';
-**	src[2].value = 'B';
-**	src[3].value = 'E';
-**	src[4].value = 'O';
-**	src[5].value = 'R';
-**	src[6].value = 'N';
-**	src[7].value = 'O';
-**	src[8].value = 'T';
-**	src[9].value = 257;
-**	src[10].value = 259;
-**	src[11].value = 261;
-**	src[12].value = 266;
-**	src[13].value = 260;
-**	src[14].value = 262;
-**	src[15].value = 264;
-**	src[16].value = END;
-*/
-
-int			Lzw_UncompressFunction(t_lzw *src, unsigned char *dest, size_t *len)
+int			uncompress_lzw(t_lzw *src, unsigned char *dest, int nb, size_t *len)
 {
 	t_lzw			dictionary[256][256];
 	int				dico;
 	int				index;
 	int				index2;
 
+	(void)nb; // LZW MINIMUM CODE
+	(void)len;
 	index = 0;
 	index2 = 1;
 	dico = 0;
@@ -193,5 +167,21 @@ int			Lzw_UncompressFunction(t_lzw *src, unsigned char *dest, size_t *len)
 		index2 += place_dest(dictionary, &(src[index]), &(dest[index2]));
 		dico++;
 	}
+	*len = index2;
+	printf("====================~ SRC ~==================\n");
+	for (size_t i = 0; i < *len; i++)
+		printf("[%d]\t", src[i].value);
+	printf("\n====================~ SRC ~==================\n");
+	printf("====================~ LZW ~==================\n");
+	for (int i = 0; i < index2; i++)
+		printf("[%d]\t", dest[i]);
+	printf("\n====================~ LZW ~==================\n");
+	// printf("%d || %d\n", index2, dico);
+	// printf("Resultat : ");
+	// for (int i = 0; dest[i];i++)
+	// 	printf("%c", dest[i]);
+	// printf("\n");
+	// for (int i = 0; i < 40; i+=3)
+	// 	printf("[%d]\t[%d]\t[%d]\n", dest[i + 0], dest[i + 1], dest[i + 2]);
 	return (0);
 }

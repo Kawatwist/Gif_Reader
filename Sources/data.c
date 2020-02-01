@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 23:16:06 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/31 22:11:11 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/02/01 06:26:25 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,9 @@ static void		set_color(t_gif *gif, t_frame *curr, unsigned char *base, unsigned 
 	printf("End Set_color~ [%d]\n", i);
 }
 
-int			get_gif_code_data(t_gif *gif)
+int			get_data(t_gif *gif)
 {
+	char		nb;
 	size_t		i;
 	size_t		uncompress;
 	t_frame		*curr;
@@ -81,6 +82,8 @@ int			get_gif_code_data(t_gif *gif)
 	uncompress = 0;
 	curr = gif->current;
 	printf("Welcome to the data section (Fd : %d)\n", gif->fd);
+	if (read(gif->fd, &nb, 1) < 1)
+		return (4);
 	if ((gif->error_value = join_block(gif, curr)))
 		return (gif->error_value);
 	printf("Join Block Done\n");
@@ -93,7 +96,7 @@ int			get_gif_code_data(t_gif *gif)
 	while (++i < (size_t)(curr->head.width * curr->head.height))
 		curr->uncompress[i] = 0;
 	printf("Let's go to uncompress this shit\n");
-	if ((gif->error_value = uncompress_lzw((t_lzw *)curr->data, curr->uncompress, curr->head.sort, &uncompress)))
+	if ((gif->error_value = uncompress_lzw((t_lzw *)curr->data, curr->uncompress, nb, &uncompress)))
 		return (gif->error_value);
 	printf("Wow ! Well done\n");
 	free(curr->data);
@@ -119,10 +122,12 @@ static int		get_color_map(t_gif *gif, t_frame *curr)
 	int	len;
 
 	len = 3 * (1 << (curr->head.size_tab + 1)); // Not Sure
+	printf("Len of the color map [%d]\n", len);
 	if ((curr->localtab = malloc((size_t)len)) == NULL)
 		return (5);
 	if (read(gif->fd, curr->localtab, (size_t)len) < (long)len)
 		return (4);
+	printf("Color map get");
 	return (0);
 }
 /*
@@ -155,9 +160,11 @@ int		get_gif_data(t_gif *gif)
 	gif->current->head.sort = (buffer[8] & 0b100000 >> 5);
 	gif->current->head.unused = (buffer[8] & 0b11000 >> 3);
 	gif->current->head.size_tab = buffer[8] & 0b111;
+	printf("Get Color Map\n");
 	if (gif->current->head.local_tab)
 		get_color_map(gif, gif->current);
+	if ((gif->error_value = get_data(gif)))
+		return (gif->error_value);
 	printf("Head data end (Fd : %d)\n", gif->fd);
-	printf("Real Data get\n");
 	return (0);
 }

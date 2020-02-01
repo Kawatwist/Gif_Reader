@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 22:58:35 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/31 22:03:02 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/02/01 02:50:48 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,10 @@ int			find_block_type(t_gif *gif, int *find)
 	if (read(gif->fd, &val, 1) < 1)
 		return (4);
 	printf("I'll check the new block [%#x]\n", val);
-	if (val == 0x2C || val == 0x3B || val == 0x02)
+	if (val == 0x2C || val == 0x3B)
 	{
 		val == 0x2C ? *find = 0 : 0;
-		val == 0x02 ? *find = 5 : 0;
-		val == 0x3B ? *find = 6 : 0;
+		val == 0x3B ? *find = 5 : 0;
 		return (0);
 	}
 	printf("New block ?\n");
@@ -68,7 +67,7 @@ int			loop_gif(t_gif *gif)
 		if ((gif->error_value = find_block_type(gif, &parse)))
 			return (gif->error_value);
 		tmp_c();
-		if (parse == 6)
+		if (parse == 5)
 			return (0);
 		gif->type[parse] (gif);
 	}

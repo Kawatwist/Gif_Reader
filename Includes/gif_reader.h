@@ -6,7 +6,7 @@
 /*   By: lomasse <lomasse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 21:09:45 by lomasse           #+#    #+#             */
-/*   Updated: 2020/01/31 22:11:47 by lomasse          ###   ########.fr       */
+/*   Updated: 2020/02/01 02:50:37 by lomasse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ struct              s_gif
     t_frame         *current;
     unsigned int    width;
     unsigned int    height;
-    int             (*type[6]) (t_gif *gif);
+    int             (*type[5]) (t_gif *gif);
     int             cmlen;
     int             error_value;
 };
